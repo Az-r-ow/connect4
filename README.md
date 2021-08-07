@@ -2,7 +2,7 @@
 
 ### __Quickstart :__
 
-1. Clone the repo 
+1. Clone the repo
 
 2. Navigate into the repo
 
@@ -10,6 +10,6 @@
 
 4. Run `./connect4`
 
->PS: Everything should be done in the terminal
+>PS: Everything should be done within the terminal
 
 ---
