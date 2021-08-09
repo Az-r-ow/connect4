@@ -1,4 +1,6 @@
 #include <stdio.h>
+#include <ctype.h>
+#include "getstr.h"
 
 // The board's boundaries
 #define WIDTH 7
@@ -49,8 +51,9 @@ int add_placement(int player, int placement){
 
   placement = placement - 1; //Because arrays are 0 indexed
 
-  if (placement > WIDTH - 1 || placement < 0)
+  if (placement > WIDTH - 1 || placement < 0){
     return 0;
+  }
 
     for (int i = HEIGHT - 1; i > - 1; i--){
       if(board[i][placement] == 0){
@@ -97,22 +100,36 @@ int areFourConnected(int player){
 }
 
 int player_turn(int * player_1, int * player_2, int * last_played_by, int * current_player){
+  /**
+  * For the purpose user input checking
+  * Convert user input from char to int only if
+  * his input is a valid int.
+  */
+
+  char player1_input[2], player2_input[2];
 
   if (*last_played_by == 2){
     printf("Player 1 : ");
-    scanf("%d", &(*player_1));
 
-    if (!add_placement(*current_player, *player_1))
+    *player_1 = getstr_to_int();
+
+    if (!add_placement(*current_player, *player_1)){
+      printf("You must input a number between 1 and 7 !\n");
       return player_turn(player_1, player_2, last_played_by, current_player);
+    }
 
     *last_played_by = 1;
     *current_player = 2;
   }else{
-    printf("Player 2 : ");
-    scanf("%d", &(*player_2));
 
-    if (!add_placement(*current_player, *player_2))
+    printf("Player 2 : ");
+
+    *player_2 = getstr_to_int();
+
+    if (!add_placement(*current_player, *player_2)){
+      printf("You must input a number between 1 and 7 !\n");
       return player_turn(player_1, player_2, last_played_by, current_player);
+    }
 
     *last_played_by = 2;
     *current_player = 1;
