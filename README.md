@@ -1,6 +1,6 @@
 # __Terminal Connect 4__
 
-### __Quickstart :__
+## __Quickstart :__
 
 1. Clone the repo
 
@@ -13,3 +13,7 @@
 >PS: Everything should be done within the terminal
 
 ---
+## __Contribute :__
+Pull requests are welcome! If you see something you'd like to add, please do. For drastic changes, please open an issue first.
+
+--- 
