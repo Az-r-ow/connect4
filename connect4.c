@@ -17,13 +17,14 @@ int board[HEIGHT][WIDTH] = {
 };
 
 
-// Function to print the board
+// Draw the board in the console
 int draw(){
   int i = 0;
 
+  printf("\n\n");
+
   for(; i < HEIGHT; i++){
     printf("|");
-
     for (int j = 0; j < WIDTH; j++){
 
       if (board[i][j] == 1){
@@ -33,12 +34,11 @@ int draw(){
       }else{
         printf(" . ");
       }
+      printf("|");
     }
-    printf("|");
-
     printf("\n");
   }
-  printf("  1  2  3  4  5  6  7 \n");
+  printf("  1   2   3   4   5   6   7 \n");
   return 0;
 }
 
@@ -100,12 +100,6 @@ int areFourConnected(int player){
 }
 
 int player_turn(int * player_1, int * player_2, int * last_played_by, int * current_player){
-  /**
-  * For the purpose user input checking
-  * Convert user input from char to int only if
-  * his input is a valid int.
-  */
-
   char player1_input[2], player2_input[2];
 
   if (*last_played_by == 2){
