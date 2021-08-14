@@ -6,7 +6,7 @@
 
 2. Navigate into the repo
 
-3. Compile the c file : Eg:`make connect4`
+3. Compile the c file : __Eg:__ `make connect4`
 
 4. Run `./connect4` (if `make connect4` was used). 
 
