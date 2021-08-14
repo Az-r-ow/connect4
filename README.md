@@ -6,9 +6,9 @@
 
 2. Navigate into the repo
 
-3. Compile the c file : `make connect4`
+3. Compile the c file : Eg:`make connect4`
 
-4. Run `./connect4`
+4. Run `./connect4`(if `make connect4` was used). 
 
 >PS: Everything should be done within the terminal
 
