@@ -145,6 +145,12 @@ int main(){
 
   int game_over = 0;
 
+  printf("\n\n"); 
+  printf("On each player's turn input the number of the row where you want to drop your disk\n");
+  printf("Player's input should be a number between 1 ==> 7\n");
+  printf("Player 1 will be ==> X\n");
+  printf("Player 2 will be ==> O\n");
+
   // Print the empty Board
   draw();
 
