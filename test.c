@@ -1,6 +1,7 @@
 #include <ncurses.h>
 #include <stdio.h>
 #include <string.h>
+#include <math.h>
 
 // The board's boundaries
 #define WIDTH 7
@@ -39,7 +40,7 @@ void drawboard() {
   char emptytemp[] = "| _ ";
   char xtemp[] = "| X ";
   char otemp[] = "| O ";
-  char rowend[] = "|\n";
+  char rowend[] = "|";
 
   char asciirow[ASCII_WIDTH];
 
@@ -57,18 +58,18 @@ void drawboard() {
     strcpy(asciiboard[i], asciirow);
     strcpy(asciirow, ""); // Reinitialize the row
   }
-  char finalrow[] = "  1   2   3   4   5   6   7  \n";
+  char finalrow[] = "  1   2   3   4   5   6   7  ";
   strcpy(asciiboard[ASCII_HEIGHT - 1], finalrow);
 }
 
 /*
-  printboard() will print the board in the window
+  printboardw() will print the board in the center of the window
 */
-void printboard(int row, int col) {
+void printboardw(WINDOW *win, int row, int col) {
   int boardheight = (int)(sizeof(asciiboard) / sizeof(asciiboard[0]));
   int count = (int) - ((sizeof(asciiboard) / sizeof(asciiboard[0])) / 2);
   for(int i = 0; i < boardheight; i++) {
-    mvprintw((row/ 2) + count, (col - 30)/2, "%s", asciiboard[i]);
+    mvwprintw(win, (row/ 2) + count, (col - 30)/2, "%s", asciiboard[i]);
     count++;
   }
 }
@@ -76,15 +77,23 @@ void printboard(int row, int col) {
 int main() {
 
   // The number of rows and columns on the screen
-  int row, col;
+  int row, col, wrow, wcol;
 
   drawboard();
 
   initscr();
   getmaxyx(stdscr, row, col);
-  printboard(row, col);
-  refresh();
-  getch();
+
+  wrow = round(row * 0.8); // 80% the height
+  wcol = round(col * 0.8); // 80% the width
+
+  WINDOW *win = newwin(wrow, wcol, round((row * 0.11))  , round(row * 0.33));
+  box(win, 0, 0);
+
+  printboardw(win, wrow, wcol);
+
+  curs_set(0);
+  wgetch(win);
   endwin();
 
 
