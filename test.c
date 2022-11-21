@@ -1,7 +1,9 @@
 #include <ncurses.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <math.h>
+#include "views.h"
 
 // The board's boundaries
 #define WIDTH 7
@@ -74,84 +76,30 @@ void printboardw(WINDOW *win, int row, int col) {
   }
 }
 
-void printinterface(WINDOW *win, int wrow, int wcol) {
-    box(win, 0, 0);
-    printboardw(win, wrow, wcol);
-}
-
-void handlemainmenu(WINDOW *win) {
-
-    char options[5][50] = {
-        "2 Players",
-        "Coming Soon...",
-        "Help"
-    };
-
-    // Number of options
-    int optionslen = (int) (sizeof(options) / sizeof(options[0]));
-
-    // The separation between each item
-    int spacing = 2;
-
-    // The selected element
-    int selected = 0; // The first option on the list
-
-    // The user's choice
-    int choice;
-
-    // Makes it so we can use arrow keys
-    keypad(win, true);
-
-    while(1) {
-      for (int i = 0; i < optionslen; i++) {
-          if (i == selected)
-            wattron(win, A_REVERSE);
-          mvwprintw(win, 0, spacing, options[i]);
-          wattroff(win, A_REVERSE);
-          spacing += strlen(options[i]) + 2;
-      }
-      // Reset the spacing
-      spacing = 2;
-
-      choice = wgetch(win);
-
-      switch (choice) {
-        case KEY_RIGHT:
-          if(selected == (optionslen - 3))
-            break;
-          selected++;
-          break;
-        case KEY_LEFT:
-          if (selected == 0)
-            break;
-          selected--;
-          break;
-        default:
-          break;
-      }
-
-      if (choice == 10)
-        break;
-    }
-
-}
-
 int main() {
 
   // The number of rows and columns on the screen
   int row, col, wrow, wcol;
 
-  drawboard();
-
   initscr();
+  refresh();
+
   getmaxyx(stdscr, row, col);
 
   wrow = round(row * 0.8); // 80% the height
   wcol = round(col * 0.8); // 80% the width
 
-  WINDOW *win = newwin(wrow, wcol, round((row * 0.11))  , round(row * 0.33));
-  printinterface(win, wrow, wcol);
-  handlemainmenu(win);
+  WINDOW *win = newwin(wrow, wcol, round((row * 0.11)), round(row * 0.33));
+
+  int gametype = mainmenuview(win, wrow, wcol);
+
+  int game_ongoing = true;
+
+  clear();
+  refresh();
+
+  drawboard(); // Create the ascii version
+  printboardw(win, wrow, wcol);
 
   curs_set(0);
   wgetch(win);
