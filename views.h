@@ -28,6 +28,14 @@ void help_view(WINDOW * win, int row, int col) {
 // Create the main menu and return user game type
 int mainmenuview(WINDOW *win, int row, int col) {
 
+  // First check if the window size
+  if(row <= 25 || col <= 50) {
+    printw("window too  small");
+    getch();
+    endwin();
+    return 0;
+  }
+
     box(win, 0, 0);
 
     char options[5][50] = {

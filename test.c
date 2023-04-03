@@ -59,9 +59,7 @@ void drawboard() {
     strcat(asciirow, rowend);
     strcpy(asciiboard[i], asciirow);
     strcpy(asciirow, ""); // Reinitialize the row
-  }
-  char finalrow[] = "  1   2   3   4   5   6   7  ";
-  strcpy(asciiboard[ASCII_HEIGHT - 1], finalrow);
+  }  
 }
 
 /*
