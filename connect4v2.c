@@ -6,8 +6,8 @@
 #include "views.h"
 #include "gameplay.h"
 
-
-int main() {
+int main()
+{
 
   // The number of rows and columns on the screen
   int row, col, wrow, wcol;
