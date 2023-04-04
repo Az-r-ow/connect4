@@ -63,15 +63,82 @@ void drawboard() {
 }
 
 /*
-  printboardw() will print the board in the center of the window
+  displayboardw() will print the board in the center of the window
 */
-void printboardw(WINDOW *win, int row, int col) {
+void displayboardw(WINDOW *win, int row, int col) {
   int boardheight = (int)(sizeof(asciiboard) / sizeof(asciiboard[0]));
   int count = (int) - ((sizeof(asciiboard) / sizeof(asciiboard[0])) / 2);
+  int currow; // current printing row
+
+  // current printing column
+  int currcol = (col - 30)/2; 
+
+  // Printing the board
   for(int i = 0; i < boardheight; i++) {
-    mvwprintw(win, (row/ 2) + count, (col - 30)/2, "%s", asciiboard[i]);
+    currow = (row / 2) + count;
+    mvwprintw(win, currow, currcol, "%s", asciiboard[i]);
     count++;
   }
+
+  // spacing between the elements
+  int spaces = 2;
+
+  // selected row
+  int selected = 0;
+
+  // user choice
+  int key;
+
+  // enable arrow keys usage
+  keypad(win, true);
+
+  // Print the switchable column indexes
+  while(1) {
+    for(int i = 0; i < WIDTH; i++) {
+      char sindex[3];
+      sprintf(sindex, "%d", (i + 1));
+      if (i == selected)
+        wattron(win, A_REVERSE);
+      mvwprintw(win, currow, (currcol + spaces), sindex);
+      wattroff(win, A_REVERSE);
+      
+      // Set spaces to 4 after printing 1
+      spaces += 4;
+
+      if (i == (WIDTH - 1)) {
+        // move the cursor back
+        wmove(win, currow, (currcol + 2));
+      }
+    }
+
+    // Reset spaces
+    spaces = 2;
+
+    // Getting the keys inputs 
+    key = wgetch(win);
+
+    switch(key) {
+      case KEY_RIGHT:
+        if(selected == (WIDTH - 1))
+          break;
+        selected++;
+        break;
+      case KEY_LEFT:
+        if (selected == 0)
+          break;
+        selected--;
+        break;
+      default:
+        break;
+    }
+
+    // On ENTER 
+    if (key == 10) {
+      exit(0);
+    }
+  }
+
+
 }
 
 int main() {
@@ -97,7 +164,7 @@ int main() {
   refresh();
 
   drawboard(); // Create the ascii version
-  printboardw(win, wrow, wcol);
+  displayboardw(win, wrow, wcol);
 
   curs_set(0);
   wgetch(win);

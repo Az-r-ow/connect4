@@ -14,7 +14,7 @@ void help_view(WINDOW * win, int row, int col) {
   char help_title[] = "Welcome to Terminal Connect 4";
 
   char help_body[20][500] = {
-    "This is a two player game and hopefully one day you will be able to play alonge against an AI.",
+    "This is a two player game and hopefully one day you will be able to play against an AI.",
     "But for now, this is how you play :"
   };
 
