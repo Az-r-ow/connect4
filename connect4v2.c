@@ -104,15 +104,16 @@ void displayboardw(WINDOW *win, int row, int col) {
       
       // Set spaces to 4 after printing 1
       spaces += 4;
-
-      if (i == (WIDTH - 1)) {
-        // move the cursor back
-        wmove(win, currow, (currcol + 2));
-      }
     }
 
     // Reset spaces
     spaces = 2;
+
+    // Reset cursor position
+    wmove(win, currow, (currcol + spaces));
+    
+    // Invisible cursor
+    curs_set(0);
 
     // Getting the keys inputs 
     key = wgetch(win);
@@ -134,7 +135,8 @@ void displayboardw(WINDOW *win, int row, int col) {
 
     // On ENTER 
     if (key == 10) {
-      exit(0);
+      curs_set(2);
+      endwin();
     }
   }
 
@@ -166,7 +168,6 @@ int main() {
   drawboard(); // Create the ascii version
   displayboardw(win, wrow, wcol);
 
-  curs_set(0);
   wgetch(win);
   endwin();
 
