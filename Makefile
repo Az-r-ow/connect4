@@ -1,5 +1,15 @@
-make: connect4.c
-	clang -lcurses connect4.c -o connect4
+CC=clang
+CFLAGS=-lcurses -Wall
+SRCS=$(wildcard src/*.c)
+OBJS=$(patsubst src/%.c, obj/%.o, $(SRCS))
 
-connect4v2: connect4v2.c
-	clang -lcurses connect4v2.c -o connect4v2 && ./connect4v2
+all: bin/connect4v2
+
+bin/connect4v2: $(OBJS)
+	$(CC) $(CFLAGS) -o $@ $^
+
+obj/%.o: src/%.c
+	$(CC) $(CFLAGS) -c $^ -o $@
+
+clean:
+	rm -rf bin/* obj/*
