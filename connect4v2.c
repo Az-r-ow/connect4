@@ -24,6 +24,11 @@ int main()
 
   int gametype = mainmenuview(win, wrow, wcol);
 
+  wrow = round(row * 0.7);
+  wcol = round(col * 0.5);
+
+  win = newwin(wrow, wcol, round((wrow * 0.11)), round(wcol * 0.5));
+
   int game_ongoing = true;
 
   clear();
@@ -31,7 +36,6 @@ int main()
 
   gameplay(win, wrow, wcol);
 
-  wgetch(win);
   endwin();
 
   return 0;

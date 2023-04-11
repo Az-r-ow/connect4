@@ -76,6 +76,9 @@ int mainmenuview(WINDOW *win, int row, int col)
 
     choice = wgetch(win);
 
+    // Invisible cursor
+    curs_set(0);
+
     switch (choice)
     {
     case KEY_RIGHT:

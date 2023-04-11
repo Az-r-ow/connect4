@@ -6,6 +6,9 @@
 #define ASCII_HEIGHT 7
 #define ASCII_WIDTH 50
 
+#define BIG_SPACE 4
+#define SMALL_SPACE 2
+
 // Initializing the board
 int board[HEIGHT][WIDTH] = {
     {0, 0, 0, 0, 0, 0, 0},
@@ -77,7 +80,7 @@ void drawboard()
 
 int getuserchoice(WINDOW *win, int currow, int curcol)
 {
-  int spaces = 2;
+  int spaces = SMALL_SPACE;
   int selected = 0;
 
   // enable arrow keys
@@ -94,11 +97,11 @@ int getuserchoice(WINDOW *win, int currow, int curcol)
       mvwprintw(win, currow, (curcol + spaces), sindex);
       wattroff(win, A_REVERSE);
 
-      spaces += 4;
+      spaces += BIG_SPACE;
     }
 
     // reset spaces
-    spaces = 2;
+    spaces = SMALL_SPACE;
 
     // make the cursor invisible
     curs_set(0);
@@ -146,24 +149,89 @@ void printasciiboard(WINDOW *win, int row, int *currow, int curcol)
   }
 }
 
-void gameplay(WINDOW *win, int row, int col)
+void printlogs(WINDOW *win, int gameongoing, int player, int currow, int curcol)
+{
+  mvwprintw(win, (currow + BIG_SPACE), (curcol + BIG_SPACE), "Player %d turn !", player);
+}
+
+int gameview(WINDOW *win, int gameongoing, int player, int row, int col, int currow, int curcol)
+{
+  box(win, 0, 0);
+  int boardheight = (int)(sizeof(asciiboard) / sizeof(asciiboard[0]));
+
+  printasciiboard(win, row, &currow, curcol);
+
+  currow = (row / 2) + (boardheight / 2);
+  printlogs(win, gameongoing, player, currow, curcol);
+  return getuserchoice(win, currow, curcol);
+}
+
+int checkgameover(int player)
+{
+
+  // horizontalCheck
+  for (int j = 0; j < HEIGHT - 3; j++)
+  {
+    for (int i = 0; i < WIDTH; i++)
+    {
+      if (board[i][j] == player && board[i][j + 1] == player && board[i][j + 2] == player && board[i][j + 3] == player)
+      {
+        return 1;
+      }
+    }
+  }
+  // verticalCheck
+  for (int i = 0; i < WIDTH - 3; i++)
+  {
+    for (int j = 0; j < HEIGHT; j++)
+    {
+      if (board[i][j] == player && board[i + 1][j] == player && board[i + 2][j] == player && board[i + 3][j] == player)
+      {
+        return 1;
+      }
+    }
+  }
+  // ascendingDiagonalCheck
+  for (int i = 3; i < HEIGHT; i++)
+  {
+    for (int j = 0; j < WIDTH - 3; j++)
+    {
+      if (board[i][j] == player && board[i - 1][j + 1] == player && board[i - 2][j + 2] == player && board[i - 3][j + 3] == player)
+        return 1;
+    }
+  }
+  // descendingDiagonalCheck
+  for (int i = 3; i < HEIGHT; i++)
+  {
+    for (int j = 3; j < WIDTH; j++)
+    {
+      if (board[i][j] == player && board[i - 1][j - 1] == player && board[i - 2][j - 2] == player && board[i - 3][j - 3] == player)
+        return 1;
+    }
+  }
+  return 0;
+}
+
+int gameplay(WINDOW *win, int row, int col)
 {
   int player = 1;
-  int boardheight = (int)(sizeof(asciiboard) / sizeof(asciiboard[0]));
-  int currow; // current printing row
+  int currow = row; // current printing row
 
   // current printing column
   int curcol = (col - 30) / 2;
 
   int playerchoice = 0;
 
-  do
+  int gameongoing = 1;
+
+  while (gameongoing)
   {
     player = player == 1 ? 2 : 1;
     drawboard();
-    printasciiboard(win, row, &currow, curcol);
-    currow = (row / 2) + (boardheight / 2);
-    playerchoice = getuserchoice(win, currow, curcol);
+    playerchoice = gameview(win, gameongoing, player, row, col, currow, curcol);
     addplacement(player, playerchoice);
-  } while (1);
+    gameongoing = checkgameover(player) ? 0 : 1;
+  }
+
+  return player;
 }
