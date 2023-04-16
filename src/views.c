@@ -49,8 +49,7 @@ void help_view()
   }
 }
 
-// Create the main menu and return user game type
-int main_menu_view()
+void window_init()
 {
   getmaxyx(stdscr, row, col);
 
@@ -66,15 +65,19 @@ int main_menu_view()
   c_row = round((row / 2) * 0.8);
   c_col = round((col / 2) * 0.8);
 
+  initscr();
+  refresh();
+
+  main_window = newwin(n_rows, n_cols, begin_y, begin_x);
+}
+
+// Create the main menu and return user game type
+int main_menu_view()
+{
   // Only if user no user choice
   if (!user_choice)
   {
-    // Initialize screen
-    initscr();
-    refresh();
-
-    // initialise new window
-    main_window = newwin(n_rows, n_cols, begin_y, begin_x);
+    window_init();
   }
 
   // First check if the window size
