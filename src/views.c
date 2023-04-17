@@ -4,6 +4,7 @@
 #include <string.h>
 #include <math.h>
 #include "views.h"
+#include "window_co.h"
 
 char menu_options[5][50] = {
     "2 Players",
@@ -21,8 +22,7 @@ WINDOW *main_window = NULL;
 
 int user_choice = 0;
 
-// Window references
-int row, col, n_rows, n_cols, begin_y, begin_x, c_row, c_col;
+struct Window_Co view_window_co;
 
 void coming_soon_view()
 {
@@ -31,7 +31,7 @@ void coming_soon_view()
   wclear(main_window);
   wrefresh(main_window);
 
-  mvwprintw(main_window, c_row, c_col - (strlen(comingsoontext) / 2), "%s", comingsoontext);
+  mvwprintw(main_window, view_window_co.c_row, view_window_co.c_col - (strlen(comingsoontext) / 2), "%s", comingsoontext);
 }
 
 void help_view()
@@ -39,36 +39,36 @@ void help_view()
   wclear(main_window);
   wrefresh(main_window);
 
-  // center col
-  int print_col = c_col - (strlen(help_title) / 2);
+  // center view_window_co.max_cols
+  int print_col = view_window_co.c_col - (strlen(help_title) / 2);
 
-  mvwprintw(main_window, (begin_y + 1), print_col, "%s", help_title);
+  mvwprintw(main_window, (view_window_co.begin_y + 1), print_col, "%s", help_title);
   for (int i = 0; i < 2; i++)
   {
-    mvwprintw(main_window, begin_y + 3 + i, round(col * 0.09), "%s", help_body[i]);
+    mvwprintw(main_window, view_window_co.begin_y + 3 + i, round(view_window_co.max_cols * 0.09), "%s", help_body[i]);
   }
 }
 
 void window_init()
 {
-  getmaxyx(stdscr, row, col);
+  getmaxyx(stdscr, view_window_co.max_rows, view_window_co.max_cols);
 
   // Number of rows and cols
-  n_rows = round(row * 0.8);
-  n_cols = round(col * 0.8);
+  view_window_co.n_rows = round(view_window_co.max_rows * 0.8);
+  view_window_co.n_cols = round(view_window_co.max_cols * 0.8);
 
   // Starting coordinates
-  begin_y = round(row * 0.11);
-  begin_x = round(row * 0.33);
+  view_window_co.begin_y = round(view_window_co.max_rows * 0.11);
+  view_window_co.begin_x = round(view_window_co.max_rows * 0.33);
 
-  // Center row and col
-  c_row = round((row / 2) * 0.8);
-  c_col = round((col / 2) * 0.8);
+  // Center view_window_co.max_rows and view_window_co.max_cols
+  view_window_co.c_row = round((view_window_co.max_rows / 2) * 0.8);
+  view_window_co.c_col = round((view_window_co.max_cols / 2) * 0.8);
 
   initscr();
   refresh();
 
-  main_window = newwin(n_rows, n_cols, begin_y, begin_x);
+  main_window = newwin(view_window_co.n_rows, view_window_co.n_cols, view_window_co.begin_y, view_window_co.begin_x);
 }
 
 // Create the main menu and return user game type
@@ -81,7 +81,7 @@ int main_menu_view()
   }
 
   // First check if the window size
-  if (row <= 25 || col <= 50)
+  if (view_window_co.max_rows <= 25 || view_window_co.max_cols <= 50)
   {
     printw("window too  small");
     getch();

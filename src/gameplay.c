@@ -4,10 +4,14 @@
 #include <string.h>
 #include <math.h>
 #include "gameplay.h"
+#include "window_co.h"
 
-WINDOW *gamewin = NULL;
+WINDOW *game_window = NULL;
 
-int row, col, c_row, c_col;
+// Game window coordinates
+struct Window_Co gwc;
+
+int print_row;
 
 int current_player = 1;
 
@@ -76,7 +80,7 @@ int get_user_choice()
   int selected = 0;
 
   // enable arrow keys
-  keypad(gamewin, true);
+  keypad(game_window, true);
 
   while (1)
   {
@@ -85,9 +89,9 @@ int get_user_choice()
       char sindex[3];
       sprintf(sindex, "%d", (i + 1));
       if (i == selected)
-        wattron(gamewin, A_REVERSE);
-      mvwprintw(gamewin, c_row, (c_col + spaces), sindex);
-      wattroff(gamewin, A_REVERSE);
+        wattron(game_window, A_REVERSE);
+      mvwprintw(game_window, print_row, (gwc.c_col + spaces), sindex);
+      wattroff(game_window, A_REVERSE);
 
       spaces += BIG_SPACE_R;
     }
@@ -99,7 +103,7 @@ int get_user_choice()
     curs_set(0);
 
     // getting the keys inputs
-    int key = wgetch(gamewin);
+    int key = wgetch(game_window);
 
     switch (key)
     {
@@ -146,28 +150,30 @@ void print_ascii_board()
 {
   int count = (int)-((sizeof(ascii_board) / sizeof(ascii_board[0])) / 2);
 
+  int temp_row;
   for (int i = 0; i < ASCII_HEIGHT; i++)
   {
-    c_row = (row / 2) + count;
-    mvwprintw(gamewin, c_row, c_col, "%s", ascii_board[i]);
+    temp_row = gwc.c_row + count;
+    mvwprintw(game_window, temp_row, gwc.c_col, "%s", ascii_board[i]);
     count++;
   }
+
+  print_row = temp_row;
 }
 
 void print_logs()
 {
-  mvwprintw(gamewin, (c_row + BIG_SPACE_R), (c_col + BIG_SPACE_C), "Player %d's turn !", current_player);
+  mvwprintw(game_window, (print_row + BIG_SPACE_R), (gwc.c_col + BIG_SPACE_C), "Player %d's turn !", current_player);
 }
 
 int game_view()
 {
-  box(gamewin, 0, 0);
-  int boardheight = (int)(sizeof(ascii_board) / sizeof(ascii_board[0]));
+  box(game_window, 0, 0);
 
+  draw_board();
   print_ascii_board();
-
-  c_row = (row / 2) + (boardheight / 2);
   print_logs();
+
   return get_user_choice();
 }
 
@@ -222,20 +228,32 @@ void switch_players()
   current_player = current_player == 1 ? 2 : 1;
 }
 
-int gameplay()
+void init_game_window()
 {
+
   clear();
   refresh();
 
-  getmaxyx(stdscr, row, col);
+  getmaxyx(stdscr, gwc.max_rows, gwc.max_cols);
 
-  int new_row = round(row * 0.7);
-  int new_col = round(col * 0.5);
+  // Number of rows and columns
+  gwc.n_rows = round(gwc.max_rows * 0.7);
+  gwc.n_cols = round(gwc.max_cols * 0.5);
 
-  gamewin = newwin(new_row, new_col, round((new_row * 0.11)), round((new_col * 0.5)));
+  // Starting coordinates
+  gwc.begin_y = round(gwc.max_rows * 0.1);
+  gwc.begin_x = round(gwc.max_cols * 0.25);
 
-  // Center points
-  c_col = (col - 30) / 2;
+  // center row and col
+  gwc.c_row = round((gwc.max_rows / 2) * 0.7);
+  gwc.c_col = round((gwc.max_cols / 2) * 0.33);
+
+  game_window = newwin(gwc.n_rows, gwc.n_cols, gwc.begin_y, gwc.begin_x);
+}
+
+int gameplay()
+{
+  init_game_window();
 
   int game_ongoing = 1;
 
