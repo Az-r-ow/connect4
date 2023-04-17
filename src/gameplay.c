@@ -14,7 +14,8 @@ struct Window_Co gwc;
 
 int print_row;
 
-int current_player = 1;
+// Beginning will switch to 1
+int current_player = 2;
 
 // Initializing the board
 int board[HEIGHT][WIDTH] = {
