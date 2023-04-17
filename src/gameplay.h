@@ -21,6 +21,6 @@ extern int board[HEIGHT][WIDTH];
 extern char ascii_board[ASCII_HEIGHT][ASCII_WIDTH];
 
 // prototype
-int gameplay();
+void gameplay();
 
 #endif

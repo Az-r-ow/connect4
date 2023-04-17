@@ -144,7 +144,6 @@ int main_menu_view()
         return 1;
       case 1:
         // Show the coming soon view
-        // todo: remove arguments not needed
         coming_soon_view();
         main_menu_view();
         return 0;

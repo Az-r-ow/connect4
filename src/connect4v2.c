@@ -14,7 +14,5 @@ int main()
   main_menu_view();
   gameplay();
 
-  endwin();
-
   return 0;
 }

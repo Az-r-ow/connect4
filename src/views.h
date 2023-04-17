@@ -3,6 +3,5 @@
 
 // extern - defined in views.h
 extern int main_menu_view();
-// extern void game_over_view();
 
 #endif

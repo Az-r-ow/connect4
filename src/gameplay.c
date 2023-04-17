@@ -4,6 +4,7 @@
 #include <string.h>
 #include <math.h>
 #include "gameplay.h"
+#include "views.h"
 #include "window_co.h"
 
 WINDOW *game_window = NULL;
@@ -161,9 +162,23 @@ void print_ascii_board()
   print_row = temp_row;
 }
 
-void print_logs()
+void print_logs(char message[])
 {
-  mvwprintw(game_window, (print_row + BIG_SPACE_R), (gwc.c_col + BIG_SPACE_C), "Player %d's turn !", current_player);
+  mvwprintw(game_window, (print_row + BIG_SPACE_R), (gwc.c_col + BIG_SPACE_C), message);
+}
+
+void log_message(int winner)
+{
+  char message[50];
+
+  sprintf(message, "Player %d's turn", current_player);
+  print_logs(message);
+
+  if (winner)
+  {
+    sprintf(message, "Player %d WON!", winner);
+    print_logs(message);
+  }
 }
 
 int game_view()
@@ -172,9 +187,33 @@ int game_view()
 
   draw_board();
   print_ascii_board();
-  print_logs();
+  log_message(0);
+
+  move(gwc.max_rows, gwc.max_cols);
+  refresh();
 
   return get_user_choice();
+}
+
+void game_over(int winner)
+{
+  char message[50];
+
+  if (!winner)
+  {
+    strcpy(message, "Game Tied !");
+  }
+  else
+  {
+    sprintf(message, "Player %d Won !", winner);
+  }
+
+  draw_board();
+  print_ascii_board();
+  print_logs(message);
+
+  wgetch(game_window);
+  endwin();
 }
 
 int check_gameover()
@@ -251,7 +290,7 @@ void init_game_window()
   game_window = newwin(gwc.n_rows, gwc.n_cols, gwc.begin_y, gwc.begin_x);
 }
 
-int gameplay()
+void gameplay()
 {
   init_game_window();
 
@@ -264,8 +303,11 @@ int gameplay()
     add_placement(player_choice);
     game_ongoing = check_gameover() ? 0 : 1;
     if (is_tie())
-      return 0;
+    {
+      current_player = 0;
+      break;
+    }
   }
 
-  return current_player;
+  game_over(current_player);
 }
