@@ -16,7 +16,13 @@ char help_title[] = "Welcome to Terminal Connect 4";
 
 char help_body[20][500] = {
     "This is a two player game and hopefully one day you will be able to play against an AI.",
-    "But for now, this is how you play :"};
+    "But for now, this is how you play :",
+    "> Drop your checkers in a column",
+    "> Try to connect 4 in a row",
+    "> To win you could have 4 horizontally, vertically or diagonally",
+    "\n",
+    "\n",
+    "Player 1 is X and player 2 is 0"};
 
 WINDOW *main_window = NULL;
 
@@ -43,7 +49,7 @@ void help_view()
   int print_col = view_window_co.c_col - (strlen(help_title) / 2);
 
   mvwprintw(main_window, (view_window_co.begin_y + 1), print_col, "%s", help_title);
-  for (int i = 0; i < 2; i++)
+  for (int i = 0; i < 9; i++)
   {
     mvwprintw(main_window, view_window_co.begin_y + 3 + i, round(view_window_co.max_cols * 0.09), "%s", help_body[i]);
   }
