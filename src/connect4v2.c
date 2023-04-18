@@ -12,7 +12,6 @@ int main()
   refresh();
 
   main_menu_view();
-  gameplay();
 
   return 0;
 }

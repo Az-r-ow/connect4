@@ -3,12 +3,13 @@
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
+#include "gameplay.h"
 #include "views.h"
 #include "window_co.h"
 
 char menu_options[5][50] = {
     "2 Players",
-    "Coming Soon...",
+    "AI",
     "Help",
     "Exit"};
 
@@ -147,12 +148,12 @@ int main_menu_view()
       {
       case 0:
         // Start the game
+        gameplay(0);
         return 1;
       case 1:
-        // Show the coming soon view
-        coming_soon_view();
-        main_menu_view();
-        return 0;
+        // Start the ai
+        gameplay(1);
+        return 2;
       case 2:
         // show the help view
         help_view();

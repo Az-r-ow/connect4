@@ -6,6 +6,7 @@
 #include "gameplay.h"
 #include "views.h"
 #include "window_co.h"
+#include "ai.h"
 
 WINDOW *game_window = NULL;
 
@@ -295,7 +296,7 @@ void init_game_window()
   game_window = newwin(gwc.n_rows, gwc.n_cols, gwc.begin_y, gwc.begin_x);
 }
 
-void gameplay()
+void gameplay(int withAi)
 {
   init_game_window();
 
@@ -304,7 +305,7 @@ void gameplay()
   while (game_ongoing)
   {
     switch_players();
-    int player_choice = game_view();
+    int player_choice = withAi && current_player == 2 ? ai_choice() : game_view();
     add_placement(player_choice);
     game_ongoing = check_gameover() ? 0 : 1;
     if (is_tie())
@@ -315,4 +316,23 @@ void gameplay()
   }
 
   game_over(current_player);
+}
+
+void ai_gameplay()
+{
+  init_game_window();
+
+  int game_ongoing = 1;
+
+  while (game_ongoing)
+  {
+    int player_choice = current_player == 1 ? game_view() : ai_choice();
+    add_placement(player_choice);
+    game_ongoing = check_gameover() ? 0 : 1;
+    if (is_tie())
+    {
+      current_player = 0;
+      break;
+    }
+  }
 }

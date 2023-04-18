@@ -22,5 +22,6 @@ extern char ascii_board[ASCII_HEIGHT][ASCII_WIDTH];
 
 // prototype
 void gameplay();
+void ai_gameplay();
 
 #endif
