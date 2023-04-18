@@ -86,7 +86,7 @@ int main_menu_view()
     printw("window too  small");
     getch();
     endwin();
-    return 0;
+    exit(0);
   }
 
   box(main_window, 0, 0);

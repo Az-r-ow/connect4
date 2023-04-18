@@ -28,18 +28,6 @@ int board[HEIGHT][WIDTH] = {
 
 char ascii_board[ASCII_HEIGHT][ASCII_WIDTH];
 
-void add_placement(int placement)
-{
-  for (int i = HEIGHT - 1; i > -1; i--)
-  {
-    if (board[i][placement] == 0)
-    {
-      board[i][placement] = current_player;
-      return;
-    }
-  }
-}
-
 /**
  * draw the ascii version of board
  * in asciiboard
@@ -196,6 +184,20 @@ int game_view()
   return get_user_choice();
 }
 
+void add_placement(int placement)
+{
+  for (int i = HEIGHT - 1; i > -1; i--)
+  {
+    if (board[i][placement] == 0)
+    {
+      board[i][placement] = current_player;
+      return;
+    }
+  }
+
+  return add_placement(game_view());
+}
+
 void game_over(int winner)
 {
   char message[50];
@@ -209,6 +211,8 @@ void game_over(int winner)
     sprintf(message, "Player %d Won !", winner);
   }
 
+  clear();
+  refresh();
   draw_board();
   print_ascii_board();
   print_logs(message);
