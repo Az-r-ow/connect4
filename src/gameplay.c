@@ -6,12 +6,12 @@
 #include "gameplay.h"
 #include "views.h"
 #include "window_co.h"
-#include "ai.h"
+#include "mcts.h"
 
 WINDOW *game_window = NULL;
 
 // Game window coordinates
-struct Window_Co gwc;
+Window_Co gwc;
 
 int print_row;
 
@@ -222,7 +222,7 @@ void game_over(int winner)
   endwin();
 }
 
-int check_gameover()
+int check_winner(int b[][WIDTH])
 {
 
   // horizontalCheck
@@ -230,10 +230,8 @@ int check_gameover()
   {
     for (int i = 0; i < WIDTH; i++)
     {
-      if (board[i][j] == current_player && board[i][j + 1] == current_player && board[i][j + 2] == current_player && board[i][j + 3] == current_player)
-      {
-        return 1;
-      }
+      if (b[i][j] && b[i][j] == b[i + 1][j] && b[i + 1][j] == b[i + 2][j] && b[i + 2][j] == b[i + 3][j])
+        return b[i][j];
     }
   }
   // verticalCheck
@@ -241,10 +239,8 @@ int check_gameover()
   {
     for (int j = 0; j < HEIGHT; j++)
     {
-      if (board[i][j] == current_player && board[i + 1][j] == current_player && board[i + 2][j] == current_player && board[i + 3][j] == current_player)
-      {
-        return 1;
-      }
+      if (b[i][j] && b[i][j] == b[i][j + 1] && b[i][j + 1] == b[i][j + 2] && b[i][j + 2] == b[i][j + 3])
+        return b[i][j];
     }
   }
   // ascendingDiagonalCheck
@@ -252,8 +248,8 @@ int check_gameover()
   {
     for (int j = 0; j < WIDTH - 3; j++)
     {
-      if (board[i][j] == current_player && board[i - 1][j + 1] == current_player && board[i - 2][j + 2] == current_player && board[i - 3][j + 3] == current_player)
-        return 1;
+      if (b[i][j] && b[i][j] == b[i - 1][j + 1] && b[i - 1][j + 1] == b[i - 2][j + 2] && b[i - 2][j + 2] == b[i - 3][j + 3])
+        return b[i][j];
     }
   }
   // descendingDiagonalCheck
@@ -261,10 +257,11 @@ int check_gameover()
   {
     for (int j = 3; j < WIDTH; j++)
     {
-      if (board[i][j] == current_player && board[i - 1][j - 1] == current_player && board[i - 2][j - 2] == current_player && board[i - 3][j - 3] == current_player)
-        return 1;
+      if (b[i][j] && b[i][j] == b[i - 1][j - 1] && b[i - 1][j - 1] == b[i - 2][j - 2] && b[i - 2][j - 2] == b[i - 3][j - 3])
+        return b[i][j];
     }
   }
+
   return 0;
 }
 
@@ -307,15 +304,12 @@ void gameplay(int withAi)
     switch_players();
     int player_choice = withAi && current_player == 2 ? ai_choice() : game_view();
     add_placement(player_choice);
-    game_ongoing = check_gameover() ? 0 : 1;
+    int winner = check_winner(board);
+    if (winner)
+      return game_over(winner);
     if (is_tie())
-    {
-      current_player = 0;
-      break;
-    }
+      return game_over(0);
   }
-
-  game_over(current_player);
 }
 
 void ai_gameplay()
@@ -328,11 +322,10 @@ void ai_gameplay()
   {
     int player_choice = current_player == 1 ? game_view() : ai_choice();
     add_placement(player_choice);
-    game_ongoing = check_gameover() ? 0 : 1;
+    int winner = check_winner(board);
+    if (winner)
+      return game_over(winner);
     if (is_tie())
-    {
-      current_player = 0;
-      break;
-    }
+      return game_over(0);
   }
 }

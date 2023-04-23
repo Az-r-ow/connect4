@@ -29,7 +29,7 @@ WINDOW *main_window = NULL;
 
 int user_choice = 0;
 
-struct Window_Co view_window_co;
+Window_Co view_window_co;
 
 void coming_soon_view()
 {

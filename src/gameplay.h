@@ -21,7 +21,7 @@ extern int board[HEIGHT][WIDTH];
 extern char ascii_board[ASCII_HEIGHT][ASCII_WIDTH];
 
 // prototype
-void gameplay();
-void ai_gameplay();
+void gameplay(int withAi);
+int check_winner(int b[][WIDTH]);
 
 #endif
