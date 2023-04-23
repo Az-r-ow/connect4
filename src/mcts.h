@@ -3,13 +3,17 @@
 
 #define MAX_CHILD_NODES_NUM 7
 #define ITERATIONS 1000
+#define C 2
 
 typedef struct Node Node;
 
 typedef struct Node
 {
   Node *parentNode;
-  Node *childNodes;
+  Node *childNodes[MAX_CHILD_NODES_NUM];
+  double ucb1;
+  int player;
+  int action;
   int games_played;
   int num_wins;
 } Node;
