@@ -16,9 +16,11 @@ typedef struct Node
   int action;
   int games_played;
   int num_wins;
+  int num_visits;
 } Node;
 
 // prototype
 int ai_choice();
+void ai_test();
 
 #endif
