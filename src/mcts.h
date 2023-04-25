@@ -10,7 +10,7 @@ typedef struct Node Node;
 typedef struct Node
 {
   Node *parentNode;
-  Node *childNodes[MAX_CHILD_NODES_NUM];
+  Node *childNodes;
   double ucb1;
   int player;
   int action;

@@ -9,13 +9,11 @@ int initial_state[HEIGHT][WIDTH];
 Node choose_random_node(Node parent)
 {
   int rand_index = rand() % MAX_CHILD_NODES_NUM + 1;
-  return (*(parent.childNodes[rand_index]));
+  return parent.childNodes[rand_index];
 }
 
 double calculate_ucb1(Node node)
 {
-  printf("Node's parent action -> %d\n", (node.parentNode)->action);
-  printf("Node's action -> %d \n", node.action);
   int N = (node.parentNode)->num_visits;
   printf("N -> %d\n", N);
   if (!N)
@@ -23,12 +21,18 @@ double calculate_ucb1(Node node)
   return node.ucb1 + (C * (sqrt(log(N) / node.num_visits)));
 }
 
-void set_empty_pointer_array(Node *node)
+void free_tree(Node *root)
 {
+  if (root->childNodes == NULL)
+    return;
+
   for (int i = 0; i < MAX_CHILD_NODES_NUM; i++)
   {
-    node->childNodes[i] = NULL;
+    free_tree(&root->childNodes[i]);
   }
+
+  free(root->childNodes);
+  return;
 }
 
 int place_action(Node node)
@@ -45,28 +49,24 @@ int place_action(Node node)
   return 0;
 }
 
-Node init_child_node(Node *parentNode, int action)
+void init_child_node(Node *parentNode, int action)
 {
   printf("A node is being created !\n");
 
   Node childNode;
 
-  // setting child nodes
-  set_empty_pointer_array(&childNode);
   childNode.ucb1 = 0;
   childNode.player = parentNode->player == 1 ? 2 : 1;
   childNode.action = action;
-  childNode.games_played = action + 1;
+  childNode.games_played = 0;
   childNode.num_wins = 0;
   childNode.num_visits = 0;
 
-  printf("That node's action -> %d\n", childNode.action);
-  printf("That node's parent action -> %d\n", childNode.parentNode->action);
-
-  // child to parent
+  childNode.childNodes = NULL;
   childNode.parentNode = &(*parentNode);
+  parentNode->childNodes[action] = childNode;
 
-  return childNode;
+  return;
 }
 
 Node initialize_root_node()
@@ -74,6 +74,7 @@ Node initialize_root_node()
   Node root;
   root.parentNode = NULL;
 
+  root.childNodes = malloc(MAX_CHILD_NODES_NUM * sizeof(Node));
   root.action = 0;
   root.ucb1 = 0;
   root.games_played = 0;
@@ -84,9 +85,7 @@ Node initialize_root_node()
   // Initializing and pointing to the children
   for (int i = 0; i < MAX_CHILD_NODES_NUM; i++)
   {
-    Node childNode = init_child_node(&root, i);
-    printf("ChildNode's action -> %d \n", childNode.action);
-    root.childNodes[i] = &childNode;
+    init_child_node(&root, i);
   }
 
   return root;
@@ -124,31 +123,27 @@ void expansion(Node *leaf)
 Node selection(Node *node)
 {
   // Check node is leaf
-  if (!(*node).childNodes[0])
+  if (!node->childNodes)
     return (*node);
 
   // Calculate ucb for child nodes
   Node *highestUcbNode = NULL;
   for (int i = 0; i < MAX_CHILD_NODES_NUM; i++)
   {
-    printf("Child Node %d ucb -> %f \n", i, (node->childNodes[i])->ucb1);
-    (node->childNodes[i])->ucb1 = calculate_ucb1((*(node->childNodes[i])));
+    (node->childNodes[i]).ucb1 = calculate_ucb1(node->childNodes[i]);
 
-    if (highestUcbNode == NULL)
+    if (!highestUcbNode)
     {
-      printf("I'm here ! \n");
-      highestUcbNode = &(*(node->childNodes[i]));
+      highestUcbNode = &node->childNodes[i];
       printf("HighestUcbNode -> %f\n", highestUcbNode->ucb1);
-
       continue;
     }
 
-    printf("HighestUcbNode -> %f\n", highestUcbNode->ucb1);
-
     // Find node with highest ucb1
-    if (((node->childNodes[i]))->ucb1 > highestUcbNode->ucb1)
+    if ((node->childNodes[i]).ucb1 > highestUcbNode->ucb1)
     {
-      highestUcbNode = &(*(node->childNodes[i]));
+      printf("Found a higher ucb node : \n");
+      highestUcbNode = &node->childNodes[i];
     }
   }
 
@@ -173,8 +168,8 @@ void mcts()
   for (int i = 0; i < ITERATIONS; i++)
   {
     Node leaf = selection(&root);
+    expansion(&leaf);
     return;
-    // expansion(&leaf);
     // simulation();
     // backpropagation();
   }
@@ -188,16 +183,13 @@ int ai_choice()
 void ai_test()
 {
   Node root = initialize_root_node();
-  // Node leaf = selection(&root);
-
-  printf("Root node action -> %d \n", root.action);
-  printf("Root node player -> %d\n", root.player);
-
-  for (int i = 0; i < MAX_CHILD_NODES_NUM; i++)
+  for (int i = 0; i < ITERATIONS; i++)
   {
-    printf("%d\n", (*root.childNodes[i]).action);
-    printf("%d\n", (*root.childNodes[i]).games_played);
-
-    // printf("Leaf node -> %d \n", leaf.action);
+    Node leaf = selection(&root);
+    printf("leaf action => %d\n", leaf.action);
+    return;
+    // expansion(&leaf);
+    // simulation();
+    // backpropagation();
   }
 }
