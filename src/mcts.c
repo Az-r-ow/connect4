@@ -76,7 +76,7 @@ Node initialize_root_node()
 
   root.childNodes = malloc(MAX_CHILD_NODES_NUM * sizeof(Node));
   root.action = 0;
-  root.ucb1 = 0;
+  root.uct = 0;
   root.games_played = 0;
   root.num_wins = 0;
   root.num_visits = 0;

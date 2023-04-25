@@ -11,7 +11,7 @@ typedef struct Node
 {
   Node *parentNode;
   Node *childNodes;
-  double ucb1;
+  double uct;
   int player;
   int action;
   int games_played;
