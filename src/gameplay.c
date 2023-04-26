@@ -225,25 +225,26 @@ void game_over(int winner)
 int check_winner(int b[][WIDTH])
 {
 
-  // horizontalCheck
-  for (int j = 0; j < HEIGHT - 3; j++)
+  // vertical check
+  for (int i = 0; i < HEIGHT - 3; i++)
   {
-    for (int i = 0; i < WIDTH; i++)
+    for (int j = 0; j < WIDTH; j++)
     {
       if (b[i][j] && b[i][j] == b[i + 1][j] && b[i + 1][j] == b[i + 2][j] && b[i + 2][j] == b[i + 3][j])
         return b[i][j];
     }
   }
-  // verticalCheck
-  for (int i = 0; i < WIDTH - 3; i++)
+
+  // horizontal check
+  for (int i = 0; i < HEIGHT; i++)
   {
-    for (int j = 0; j < HEIGHT; j++)
+    for (int j = 0; j < WIDTH - 3; j++)
     {
       if (b[i][j] && b[i][j] == b[i][j + 1] && b[i][j + 1] == b[i][j + 2] && b[i][j + 2] == b[i][j + 3])
         return b[i][j];
     }
   }
-  // ascendingDiagonalCheck
+  // ascending diagonal check
   for (int i = 3; i < HEIGHT; i++)
   {
     for (int j = 0; j < WIDTH - 3; j++)
@@ -252,7 +253,7 @@ int check_winner(int b[][WIDTH])
         return b[i][j];
     }
   }
-  // descendingDiagonalCheck
+  // descending diagonal check
   for (int i = 3; i < HEIGHT; i++)
   {
     for (int j = 3; j < WIDTH; j++)
