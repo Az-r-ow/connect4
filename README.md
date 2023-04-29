@@ -1,5 +1,12 @@
 # **Terminal Connect 4**
 
+## V3
+
+### Monte Carlo tree Search
+
+**Monte Carlo tree search** (MCTS) is a heuristic search algorithm for some kinds of decision processes. Hence, perfect for board games such as connect 4.
+To balance between exploration and exploitation, the UCT formula will be used since it's the formula that combines the node value concept of MCTS and the UCB formula. ([Read More](https://www.cs.swarthmore.edu/~mitchell/classes/cs63/f20/reading/mcts.html))
+
 ## V2
 
 ### **Quickstart:**

@@ -9,9 +9,10 @@
 
 int main()
 {
-  // initscr();
-  // refresh();
-  // main_menu_view();
-  ai_test();
+  initscr();
+  refresh();
+  main_menu_view();
+
+  // ai_test();
   return 0;
 }

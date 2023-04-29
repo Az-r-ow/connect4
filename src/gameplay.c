@@ -121,13 +121,13 @@ int get_user_choice()
   }
 }
 
-int is_tie()
+int is_tie(int b[][WIDTH])
 {
   for (int i = 0; i < HEIGHT; i++)
   {
     for (int j = 0; j < WIDTH; j++)
     {
-      if (!board[i][j])
+      if (!b[i][j])
         return 0;
     }
   }
@@ -308,7 +308,7 @@ void gameplay(int withAi)
     int winner = check_winner(board);
     if (winner)
       return game_over(winner);
-    if (is_tie())
+    if (is_tie(board))
       return game_over(0);
   }
 }
@@ -326,7 +326,7 @@ void ai_gameplay()
     int winner = check_winner(board);
     if (winner)
       return game_over(winner);
-    if (is_tie())
+    if (is_tie(board))
       return game_over(0);
   }
 }

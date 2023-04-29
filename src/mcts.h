@@ -14,7 +14,6 @@ typedef struct Node
   double uct;
   int player;
   int action;
-  int games_played;
   int num_wins;
   int num_visits;
 } Node;
