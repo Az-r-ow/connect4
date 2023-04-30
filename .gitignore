@@ -2,3 +2,5 @@ test
 connect4
 .idea/
 .vscode/
+obj/
+bin/
