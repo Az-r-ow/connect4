@@ -53,8 +53,8 @@ double calculate_uct(Node node)
   if (!N || !node.num_wins)
     return INFINITY;
 
-  double V = node.player == ai_player ? (node.num_wins / node.num_visits) : -(node.num_wins / node.num_visits);
-  return V + (C * (sqrt(log(N) / node.num_visits)));
+  double V = ((double)node.num_wins / (double)node.num_visits);
+  return V + ((double)C * (sqrt(log(N) / (double)node.num_visits)));
 }
 
 void free_tree(Node *root)
@@ -91,6 +91,7 @@ int get_optimal_move(Node *node)
 
   for (int i = 0; i < WIDTH; i++)
   {
+    (node->childNodes[i]).uct = calculate_uct(node->childNodes[i]);
     if (highestUctNode == NULL)
     {
       highestUctNode = &(node->childNodes[i]);
@@ -121,9 +122,6 @@ void init_child_node(Node *parentNode, int action)
   childNode.parentNode = &(*parentNode);
   parentNode->childNodes[action] = childNode;
 
-  // printf("initializing child node for parent node => %d to child node => %d \n", parentNode->player, childNode.player);
-  // printf("child node => %d\n", childNode.player);
-
   return;
 }
 
@@ -152,22 +150,13 @@ Node initialize_root_node()
 void backpropagation(Node *node, int result)
 {
   node->num_visits = node->num_visits + 1;
-  node->num_wins = result == node->player ? node->num_wins + 1 : node->num_wins;
+
+  if (result)
+    node->num_wins = result == node->player ? node->num_wins + 1 : node->num_wins - 1;
 
   // Root node
   if (node->parentNode == NULL)
-  {
-    printf("End of backpropagation\n");
-    for (int i = 0; i < HEIGHT; i++)
-    {
-      for (int j = 0; j < WIDTH; j++)
-      {
-        printf("%d ", current_state[i][j]);
-      }
-      printf("\n");
-    }
     return;
-  }
 
   backpropagation(node->parentNode, result);
   return;
@@ -242,22 +231,17 @@ Node *selection(Node *node)
   for (int i = 0; i < MAX_CHILD_NODES_NUM; i++)
   {
     (node->childNodes[i]).uct = calculate_uct(node->childNodes[i]);
-    printf("Action %d ucb => %f\n", i, (node->childNodes[i]).uct);
-    printf("Action %d num visits => %d\n", i, (node->childNodes[i]).num_visits);
-    printf("Action %d num wins => %d\n", i, (node->childNodes[i]).num_wins);
 
     if (!highestUcbNode)
     {
       equal_node_count++;
       highestUcbNode = &node->childNodes[i];
-      // printf("HighestUcbNode -> %f\n", highestUcbNode->uct);
       continue;
     }
 
     if ((node->childNodes[i]).uct >= highestUcbNode->uct)
     {
       equal_node_count++;
-      // printf("Found a higher ucb node : \n");
       highestUcbNode = &node->childNodes[i];
     }
   }
@@ -268,8 +252,6 @@ Node *selection(Node *node)
     place_action_from_node(random_child_node);
     return selection(random_child_node);
   }
-
-  printf("Highest node action %d for player %d taken => %f\n", highestUcbNode->action, node->player, highestUcbNode->uct);
 
   // Update the board as we go deeper in the tree
   place_action_from_node(highestUcbNode);
@@ -291,16 +273,11 @@ void initialize_state()
 
 void traverse_tree(Node *node)
 {
-  printf("node => %p\n", node->childNodes);
   if (!node->childNodes)
     return;
 
-  printf("Node player => %d\n", node->player);
   for (int i = 0; i < MAX_CHILD_NODES_NUM; i++)
   {
-    printf("ChildNode player => %d\n", (node->childNodes[i]).player);
-    printf("ChildNode visits => %d\n", (node->childNodes[i]).num_visits);
-    printf("ChildNode wins => %d\n", (node->childNodes[i]).num_wins);
     traverse_tree(&(node->childNodes[i]));
   }
   return;
@@ -315,7 +292,7 @@ Node mcts()
 
   for (int i = 0; i < ITERATIONS; i++)
   {
-    printf("Selection starting");
+    // printf("Selection starting");
     Node *leaf = selection(&root);
     expansion(leaf);
 
@@ -332,14 +309,14 @@ int ai_choice()
 {
   Node mcts_tree = mcts();
   // traverse_tree(&mcts_tree);
-  for (int i = 0; i < WIDTH; i++)
-  {
-    printf("ChildNode %d player %d\n", i, (mcts_tree.childNodes[i]).player);
-    printf("Num visits => %d Num wins => %d UCT => %f\n", (mcts_tree.childNodes[i]).num_visits, (mcts_tree.childNodes[i]).num_wins, (mcts_tree.childNodes[i]).uct);
-  }
-  printf("root node num visits => %d\n", mcts_tree.num_visits);
-  printf("root node num wins => %d\n", mcts_tree.num_wins);
-  printf("root node num wins => %f\n", mcts_tree.uct);
+  // for (int i = 0; i < WIDTH; i++)
+  // {
+  //   printf("ChildNode %d player %d\n", i, (mcts_tree.childNodes[i]).player);
+  //   printf("Num visits => %d Num wins => %d UCT => %f\n", (mcts_tree.childNodes[i]).num_visits, (mcts_tree.childNodes[i]).num_wins, (mcts_tree.childNodes[i]).uct);
+  // }
+  // printf("root node num visits => %d\n", mcts_tree.num_visits);
+  // printf("root node num wins => %d\n", mcts_tree.num_wins);
+  // printf("root node num wins => %f\n", mcts_tree.uct);
 
   int optimal_move = get_optimal_move(&mcts_tree);
   free_tree(&mcts_tree);

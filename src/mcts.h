@@ -3,7 +3,7 @@
 
 #define MAX_CHILD_NODES_NUM 7
 #define ITERATIONS 1000
-#define C 2
+#define C 1.4
 
 typedef struct Node Node;
 
