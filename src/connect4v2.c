@@ -5,14 +5,12 @@
 #include <math.h>
 #include "views.h"
 #include "gameplay.h"
+#include "mcts.h"
 
 int main()
 {
   initscr();
   refresh();
-
   main_menu_view();
-  gameplay();
-
   return 0;
 }

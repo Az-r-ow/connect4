@@ -6,11 +6,12 @@
 #include "gameplay.h"
 #include "views.h"
 #include "window_co.h"
+#include "mcts.h"
 
 WINDOW *game_window = NULL;
 
 // Game window coordinates
-struct Window_Co gwc;
+Window_Co gwc;
 
 int print_row;
 
@@ -77,7 +78,7 @@ int get_user_choice()
     for (int i = 0; i < WIDTH; i++)
     {
       char sindex[3];
-      sprintf(sindex, "%d", (i + 1));
+      snprintf(sindex, sizeof(sindex), "%d", (i + 1));
       if (i == selected)
         wattron(game_window, A_REVERSE);
       mvwprintw(game_window, print_row, (gwc.c_col + spaces), sindex);
@@ -120,13 +121,13 @@ int get_user_choice()
   }
 }
 
-int is_tie()
+int is_tie(int b[][WIDTH])
 {
   for (int i = 0; i < HEIGHT; i++)
   {
     for (int j = 0; j < WIDTH; j++)
     {
-      if (!board[i][j])
+      if (!b[i][j])
         return 0;
     }
   }
@@ -160,18 +161,19 @@ void log_message(int winner)
 {
   char message[50];
 
-  sprintf(message, "Player %d's turn", current_player);
+  snprintf(message, sizeof(message), "Player %d's turn", current_player);
   print_logs(message);
 
   if (winner)
   {
-    sprintf(message, "Player %d WON!", winner);
+    snprintf(message, sizeof(message), "Player %d WON!", winner);
     print_logs(message);
   }
 }
 
 int game_view()
 {
+  refresh();
   box(game_window, 0, 0);
 
   draw_board();
@@ -208,7 +210,7 @@ void game_over(int winner)
   }
   else
   {
-    sprintf(message, "Player %d Won !", winner);
+    snprintf(message, sizeof(message), "Player %d Won !", winner);
   }
 
   clear();
@@ -221,49 +223,47 @@ void game_over(int winner)
   endwin();
 }
 
-int check_gameover()
+int check_winner(int b[][WIDTH])
 {
 
-  // horizontalCheck
-  for (int j = 0; j < HEIGHT - 3; j++)
+  // vertical check
+  for (int i = 0; i < HEIGHT - 3; i++)
   {
-    for (int i = 0; i < WIDTH; i++)
+    for (int j = 0; j < WIDTH; j++)
     {
-      if (board[i][j] == current_player && board[i][j + 1] == current_player && board[i][j + 2] == current_player && board[i][j + 3] == current_player)
-      {
-        return 1;
-      }
+      if (b[i][j] && b[i][j] == b[i + 1][j] && b[i + 1][j] == b[i + 2][j] && b[i + 2][j] == b[i + 3][j])
+        return b[i][j];
     }
   }
-  // verticalCheck
-  for (int i = 0; i < WIDTH - 3; i++)
+
+  // horizontal check
+  for (int i = 0; i < HEIGHT; i++)
   {
-    for (int j = 0; j < HEIGHT; j++)
+    for (int j = 0; j < WIDTH - 3; j++)
     {
-      if (board[i][j] == current_player && board[i + 1][j] == current_player && board[i + 2][j] == current_player && board[i + 3][j] == current_player)
-      {
-        return 1;
-      }
+      if (b[i][j] && b[i][j] == b[i][j + 1] && b[i][j + 1] == b[i][j + 2] && b[i][j + 2] == b[i][j + 3])
+        return b[i][j];
     }
   }
-  // ascendingDiagonalCheck
+  // ascending diagonal check
   for (int i = 3; i < HEIGHT; i++)
   {
     for (int j = 0; j < WIDTH - 3; j++)
     {
-      if (board[i][j] == current_player && board[i - 1][j + 1] == current_player && board[i - 2][j + 2] == current_player && board[i - 3][j + 3] == current_player)
-        return 1;
+      if (b[i][j] && b[i][j] == b[i - 1][j + 1] && b[i - 1][j + 1] == b[i - 2][j + 2] && b[i - 2][j + 2] == b[i - 3][j + 3])
+        return b[i][j];
     }
   }
-  // descendingDiagonalCheck
+  // descending diagonal check
   for (int i = 3; i < HEIGHT; i++)
   {
     for (int j = 3; j < WIDTH; j++)
     {
-      if (board[i][j] == current_player && board[i - 1][j - 1] == current_player && board[i - 2][j - 2] == current_player && board[i - 3][j - 3] == current_player)
-        return 1;
+      if (b[i][j] && b[i][j] == b[i - 1][j - 1] && b[i - 1][j - 1] == b[i - 2][j - 2] && b[i - 2][j - 2] == b[i - 3][j - 3])
+        return b[i][j];
     }
   }
+
   return 0;
 }
 
@@ -295,7 +295,7 @@ void init_game_window()
   game_window = newwin(gwc.n_rows, gwc.n_cols, gwc.begin_y, gwc.begin_x);
 }
 
-void gameplay()
+void gameplay(int withAi)
 {
   init_game_window();
 
@@ -304,15 +304,10 @@ void gameplay()
   while (game_ongoing)
   {
     switch_players();
-    int player_choice = game_view();
+    int player_choice = withAi && current_player == 2 ? ai_choice() : game_view();
     add_placement(player_choice);
-    game_ongoing = check_gameover() ? 0 : 1;
-    if (is_tie())
-    {
-      current_player = 0;
-      break;
-    }
+    int winner = check_winner(board);
+    if (winner || is_tie(board))
+      return winner ? game_over(winner) : game_over(0);
   }
-
-  game_over(current_player);
 }

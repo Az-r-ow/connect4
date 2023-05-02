@@ -3,12 +3,13 @@
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
+#include "gameplay.h"
 #include "views.h"
 #include "window_co.h"
 
 char menu_options[5][50] = {
     "2 Players",
-    "Coming Soon...",
+    "AI",
     "Help",
     "Exit"};
 
@@ -16,13 +17,20 @@ char help_title[] = "Welcome to Terminal Connect 4";
 
 char help_body[20][500] = {
     "This is a two player game and hopefully one day you will be able to play against an AI.",
-    "But for now, this is how you play :"};
+    "But for now, this is how you play :",
+    "\n",
+    "> Drop your checkers in a column",
+    "> Try to connect 4 in a row",
+    "> To win you need to have 4 horizontally, vertically or diagonally",
+    "\n",
+    "\n",
+    "Player 1 is X and player 2 is 0"};
 
 WINDOW *main_window = NULL;
 
 int user_choice = 0;
 
-struct Window_Co view_window_co;
+Window_Co view_window_co;
 
 void coming_soon_view()
 {
@@ -43,7 +51,7 @@ void help_view()
   int print_col = view_window_co.c_col - (strlen(help_title) / 2);
 
   mvwprintw(main_window, (view_window_co.begin_y + 1), print_col, "%s", help_title);
-  for (int i = 0; i < 2; i++)
+  for (int i = 0; i < 9; i++)
   {
     mvwprintw(main_window, view_window_co.begin_y + 3 + i, round(view_window_co.max_cols * 0.09), "%s", help_body[i]);
   }
@@ -141,12 +149,12 @@ int main_menu_view()
       {
       case 0:
         // Start the game
+        gameplay(0);
         return 1;
       case 1:
-        // Show the coming soon view
-        coming_soon_view();
-        main_menu_view();
-        return 0;
+        // Start the game with an ai
+        gameplay(1);
+        return 2;
       case 2:
         // show the help view
         help_view();
