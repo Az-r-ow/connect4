@@ -1,5 +1,5 @@
 CC=clang
-CFLAGS=-lcurses -Wall -fsanitize=address
+CFLAGS=-lcurses -Wall 
 SRCS=$(wildcard src/*.c)
 OBJS=$(patsubst src/%.c, obj/%.o, $(SRCS))
 
