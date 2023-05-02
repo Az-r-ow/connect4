@@ -20,6 +20,5 @@ typedef struct Node
 
 // prototype
 int ai_choice();
-void ai_test();
 
 #endif

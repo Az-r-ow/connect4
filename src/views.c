@@ -18,9 +18,10 @@ char help_title[] = "Welcome to Terminal Connect 4";
 char help_body[20][500] = {
     "This is a two player game and hopefully one day you will be able to play against an AI.",
     "But for now, this is how you play :",
+    "\n",
     "> Drop your checkers in a column",
     "> Try to connect 4 in a row",
-    "> To win you could have 4 horizontally, vertically or diagonally",
+    "> To win you need to have 4 horizontally, vertically or diagonally",
     "\n",
     "\n",
     "Player 1 is X and player 2 is 0"};
@@ -151,7 +152,7 @@ int main_menu_view()
         gameplay(0);
         return 1;
       case 1:
-        // Start the ai
+        // Start the game with an ai
         gameplay(1);
         return 2;
       case 2:

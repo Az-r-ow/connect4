@@ -78,7 +78,7 @@ int get_user_choice()
     for (int i = 0; i < WIDTH; i++)
     {
       char sindex[3];
-      sprintf(sindex, "%d", (i + 1));
+      snprintf(sindex, sizeof(sindex), "%d", (i + 1));
       if (i == selected)
         wattron(game_window, A_REVERSE);
       mvwprintw(game_window, print_row, (gwc.c_col + spaces), sindex);
@@ -161,18 +161,19 @@ void log_message(int winner)
 {
   char message[50];
 
-  sprintf(message, "Player %d's turn", current_player);
+  snprintf(message, sizeof(message), "Player %d's turn", current_player);
   print_logs(message);
 
   if (winner)
   {
-    sprintf(message, "Player %d WON!", winner);
+    snprintf(message, sizeof(message), "Player %d WON!", winner);
     print_logs(message);
   }
 }
 
 int game_view()
 {
+  refresh();
   box(game_window, 0, 0);
 
   draw_board();
@@ -209,7 +210,7 @@ void game_over(int winner)
   }
   else
   {
-    sprintf(message, "Player %d Won !", winner);
+    snprintf(message, sizeof(message), "Player %d Won !", winner);
   }
 
   clear();
@@ -306,27 +307,7 @@ void gameplay(int withAi)
     int player_choice = withAi && current_player == 2 ? ai_choice() : game_view();
     add_placement(player_choice);
     int winner = check_winner(board);
-    if (winner)
-      return game_over(winner);
-    if (is_tie(board))
-      return game_over(0);
-  }
-}
-
-void ai_gameplay()
-{
-  init_game_window();
-
-  int game_ongoing = 1;
-
-  while (game_ongoing)
-  {
-    int player_choice = current_player == 1 ? game_view() : ai_choice();
-    add_placement(player_choice);
-    int winner = check_winner(board);
-    if (winner)
-      return game_over(winner);
-    if (is_tie(board))
-      return game_over(0);
+    if (winner || is_tie(board))
+      return winner ? game_over(winner) : game_over(0);
   }
 }

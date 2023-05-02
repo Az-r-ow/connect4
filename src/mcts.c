@@ -111,7 +111,6 @@ void init_child_node(Node *parentNode, int action)
 {
   Node childNode;
 
-  // printf("parent node => %d\n", parentNode->player);
   childNode.uct = 0;
   childNode.player = parentNode->player == 1 ? 2 : 1;
   childNode.action = action;
@@ -292,13 +291,8 @@ Node mcts()
 
   for (int i = 0; i < ITERATIONS; i++)
   {
-    // printf("Selection starting");
     Node *leaf = selection(&root);
     expansion(leaf);
-
-    // if (i == 500)
-    //   return root;
-
     initialize_state();
   }
 
@@ -308,16 +302,6 @@ Node mcts()
 int ai_choice()
 {
   Node mcts_tree = mcts();
-  // traverse_tree(&mcts_tree);
-  // for (int i = 0; i < WIDTH; i++)
-  // {
-  //   printf("ChildNode %d player %d\n", i, (mcts_tree.childNodes[i]).player);
-  //   printf("Num visits => %d Num wins => %d UCT => %f\n", (mcts_tree.childNodes[i]).num_visits, (mcts_tree.childNodes[i]).num_wins, (mcts_tree.childNodes[i]).uct);
-  // }
-  // printf("root node num visits => %d\n", mcts_tree.num_visits);
-  // printf("root node num wins => %d\n", mcts_tree.num_wins);
-  // printf("root node num wins => %f\n", mcts_tree.uct);
-
   int optimal_move = get_optimal_move(&mcts_tree);
   free_tree(&mcts_tree);
   return optimal_move;
