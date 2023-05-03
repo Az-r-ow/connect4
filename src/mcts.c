@@ -43,7 +43,9 @@ int get_random_available_action(int b[][WIDTH])
   }
 
   int rand_index = rand() % available_actions_count;
-  return available_actions[rand_index];
+  int random_action = available_actions[rand_index];
+  free(available_actions);
+  return random_action;
 }
 
 double calculate_uct(Node node)
@@ -223,7 +225,7 @@ Node *selection(Node *node)
   if (!node->childNodes)
     return node;
 
-  // Calculate ucb for child nodes
+  // Calculate uct for child nodes
   Node *highestUcbNode = NULL;
   int equal_node_count = 0;
 
@@ -255,7 +257,7 @@ Node *selection(Node *node)
   // Update the board as we go deeper in the tree
   place_action_from_node(highestUcbNode);
 
-  // select node with highest ucb
+  // select node with highest uct
   return selection(highestUcbNode);
 }
 

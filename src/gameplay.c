@@ -200,7 +200,7 @@ void add_placement(int placement)
   return add_placement(game_view());
 }
 
-void game_over(int winner)
+void game_over(int winner, int withAi)
 {
   char message[50];
 
@@ -308,6 +308,6 @@ void gameplay(int withAi)
     add_placement(player_choice);
     int winner = check_winner(board);
     if (winner || is_tie(board))
-      return winner ? game_over(winner) : game_over(0);
+      return winner ? game_over(winner, withAi) : game_over(0, withAi);
   }
 }
