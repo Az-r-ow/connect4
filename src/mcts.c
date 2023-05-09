@@ -308,3 +308,9 @@ int ai_choice()
   free_tree(&mcts_tree);
   return optimal_move;
 }
+
+void ai_test()
+{
+  int ai = ai_choice();
+  printf("Ai choice => %d \n", ai);
+}
