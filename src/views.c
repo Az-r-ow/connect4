@@ -1,4 +1,4 @@
-#include <ncurses.h>
+#include <curses.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -6,8 +6,9 @@
 #include "gameplay.h"
 #include "views.h"
 #include "window_co.h"
+#include "helpers.h"
 
-char menu_options[5][50] = {
+char menu_options[20][40] = {
     "2 Players",
     "AI",
     "Help",
@@ -57,7 +58,7 @@ void help_view()
   }
 }
 
-void window_init()
+WINDOW *window_init()
 {
   getmaxyx(stdscr, view_window_co.max_rows, view_window_co.max_cols);
 
@@ -76,25 +77,23 @@ void window_init()
   initscr();
   refresh();
 
-  main_window = newwin(view_window_co.n_rows, view_window_co.n_cols, view_window_co.begin_y, view_window_co.begin_x);
+  return newwin(view_window_co.n_rows, view_window_co.n_cols, view_window_co.begin_y, view_window_co.begin_x);
 }
 
 // Create the main menu and return user game type
 int main_menu_view()
 {
-  // Only if user no user choice
+  // Only if no user choice
   if (!user_choice)
   {
-    window_init();
+    main_window = window_init();
   }
 
   // First check if the window size
   if (view_window_co.max_rows <= 25 || view_window_co.max_cols <= 50)
   {
     printw("window too  small");
-    getch();
-    endwin();
-    exit(0);
+    getch_exit_curses(0);
   }
 
   box(main_window, 0, 0);
@@ -163,7 +162,7 @@ int main_menu_view()
       case 3:
         // Leave the game
         refresh();
-        exit(0);
+        exit_curses();
         return 0;
       }
     }

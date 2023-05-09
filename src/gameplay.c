@@ -1,4 +1,4 @@
-#include <ncurses.h>
+#include <curses.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -7,6 +7,7 @@
 #include "views.h"
 #include "window_co.h"
 #include "mcts.h"
+#include "helpers.h"
 
 WINDOW *game_window = NULL;
 
@@ -75,12 +76,19 @@ int get_user_choice()
 
   while (1)
   {
-    for (int i = 0; i < WIDTH; i++)
+    for (int i = 0; i <= WIDTH; i++)
     {
       char sindex[3];
       snprintf(sindex, sizeof(sindex), "%d", (i + 1));
       if (i == selected)
         wattron(game_window, A_REVERSE);
+
+      if (i == 7)
+      {
+        mvwprintw(game_window, 0, 2, "Exit");
+        wattroff(game_window, A_REVERSE);
+        continue;
+      }
       mvwprintw(game_window, print_row, (gwc.c_col + spaces), sindex);
       wattroff(game_window, A_REVERSE);
 
@@ -99,14 +107,22 @@ int get_user_choice()
     switch (key)
     {
     case KEY_RIGHT:
-      if (selected == (WIDTH - 1))
+      if (selected == (WIDTH - 1) || selected == 7)
         break;
       selected++;
       break;
     case KEY_LEFT:
-      if (selected == 0)
+      if (selected == 0 || selected == 7)
         break;
       selected--;
+      break;
+    case KEY_UP:
+      selected = 7;
+      break;
+    case KEY_DOWN:
+      if (selected != 7)
+        break;
+      selected = 0;
       break;
     default:
       break;
@@ -115,7 +131,9 @@ int get_user_choice()
     // On ENTER
     if (key == 10)
     {
-      // return player choice
+      if (selected == 7)
+        exit_curses(0);
+
       return selected;
     }
   }
@@ -278,6 +296,7 @@ void init_game_window()
   clear();
   refresh();
 
+  noecho(); /* hides keyboard inputs */
   getmaxyx(stdscr, gwc.max_rows, gwc.max_cols);
 
   // Number of rows and columns

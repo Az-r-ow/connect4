@@ -2,7 +2,7 @@
 #define _MCTS_H_
 
 #define MAX_CHILD_NODES_NUM 7
-#define ITERATIONS 2000
+#define ITERATIONS 4000
 #define C 1.4
 
 typedef struct Node Node;
