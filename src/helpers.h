@@ -4,5 +4,6 @@
 // Prototypes
 void exit_curses();
 void getch_exit_curses();
+void wreset();
 
 #endif

@@ -17,15 +17,15 @@ char menu_options[20][40] = {
 char help_title[] = "Welcome to Terminal Connect 4";
 
 char help_body[20][500] = {
-    "This is a two player game and hopefully one day you will be able to play against an AI.",
-    "But for now, this is how you play :",
+    "Modes :",
+    "AI ->",
+    "Play against an AI that's designed to defeat you.",
     "\n",
-    "> Drop your checkers in a column",
-    "> Try to connect 4 in a row",
-    "> To win you need to have 4 horizontally, vertically or diagonally",
+    "2 Players ->",
+    "Challenge one of your peers.",
     "\n",
-    "\n",
-    "Player 1 is X and player 2 is 0"};
+    "> Check out this link for more info :",
+    "https://rulesofplaying.com/connect-4-rules/"};
 
 WINDOW *main_window = NULL;
 
@@ -33,20 +33,9 @@ int user_choice = 0;
 
 Window_Co view_window_co;
 
-void coming_soon_view()
-{
-  char comingsoontext[] = "Coming Soon...";
-
-  wclear(main_window);
-  wrefresh(main_window);
-
-  mvwprintw(main_window, view_window_co.c_row, view_window_co.c_col - (strlen(comingsoontext) / 2), "%s", comingsoontext);
-}
-
 void help_view()
 {
-  wclear(main_window);
-  wrefresh(main_window);
+  wreset(main_window); /* Clear the window */
 
   // center view_window_co.max_cols
   int print_col = view_window_co.c_col - (strlen(help_title) / 2);
@@ -92,8 +81,8 @@ int main_menu_view()
   // First check if the window size
   if (view_window_co.max_rows <= 25 || view_window_co.max_cols <= 50)
   {
-    printw("window too  small");
-    getch_exit_curses(0);
+    printw("Window too small.\nResize your window and try again");
+    exit_curses(0);
   }
 
   box(main_window, 0, 0);
@@ -136,6 +125,11 @@ int main_menu_view()
       if (user_choice == 0)
         break;
       user_choice--;
+      break;
+    case KEY_RESIZE:
+      getmaxyx(main_window, view_window_co.max_rows, view_window_co.max_cols);
+      wclear(main_window);
+      main_menu_view();
       break;
     default:
       break;

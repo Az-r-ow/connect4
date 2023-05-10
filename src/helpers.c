@@ -20,3 +20,12 @@ void getch_exit_curses(int code)
   endwin();
   exit(code);
 }
+
+/**
+ * Window Reset to clear the content of a window
+ */
+void wreset(WINDOW *win)
+{
+  wclear(win);
+  wrefresh(win);
+}
