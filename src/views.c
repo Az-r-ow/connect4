@@ -8,7 +8,7 @@
 #include "window_co.h"
 #include "helpers.h"
 
-char menu_options[20][40] = {
+char *menu_options[] = {
     "2 Players",
     "AI",
     "Help",
@@ -16,7 +16,7 @@ char menu_options[20][40] = {
 
 char help_title[] = "Welcome to Terminal Connect 4";
 
-char help_body[20][500] = {
+char *help_body[] = {
     "Modes :",
     "AI ->",
     "Play against an AI that's designed to defeat you.",
@@ -126,7 +126,7 @@ int main_menu_view()
     switch (choice)
     {
     case KEY_RIGHT:
-      if (user_choice == (menu_options_len - 2))
+      if (user_choice == (menu_options_len - 1))
         break;
       user_choice++;
       break;
