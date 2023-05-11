@@ -1,4 +1,4 @@
-#include <ncurses.h>
+#include <curses.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -6,8 +6,9 @@
 #include "gameplay.h"
 #include "views.h"
 #include "window_co.h"
+#include "helpers.h"
 
-char menu_options[5][50] = {
+char *menu_options[] = {
     "2 Players",
     "AI",
     "Help",
@@ -15,16 +16,16 @@ char menu_options[5][50] = {
 
 char help_title[] = "Welcome to Terminal Connect 4";
 
-char help_body[20][500] = {
-    "This is a two player game and hopefully one day you will be able to play against an AI.",
-    "But for now, this is how you play :",
+char *help_body[] = {
+    "Modes :",
+    "AI ->",
+    "Play against an AI that's designed to defeat you.",
     "\n",
-    "> Drop your checkers in a column",
-    "> Try to connect 4 in a row",
-    "> To win you need to have 4 horizontally, vertically or diagonally",
+    "2 Players ->",
+    "Challenge one of your peers.",
     "\n",
-    "\n",
-    "Player 1 is X and player 2 is 0"};
+    "> Check out this link for more info :",
+    "https://rulesofplaying.com/connect-4-rules/"};
 
 WINDOW *main_window = NULL;
 
@@ -32,20 +33,9 @@ int user_choice = 0;
 
 Window_Co view_window_co;
 
-void coming_soon_view()
-{
-  char comingsoontext[] = "Coming Soon...";
-
-  wclear(main_window);
-  wrefresh(main_window);
-
-  mvwprintw(main_window, view_window_co.c_row, view_window_co.c_col - (strlen(comingsoontext) / 2), "%s", comingsoontext);
-}
-
 void help_view()
 {
-  wclear(main_window);
-  wrefresh(main_window);
+  wreset(main_window); /* Clear the window */
 
   // center view_window_co.max_cols
   int print_col = view_window_co.c_col - (strlen(help_title) / 2);
@@ -57,7 +47,7 @@ void help_view()
   }
 }
 
-void window_init()
+WINDOW *window_init()
 {
   getmaxyx(stdscr, view_window_co.max_rows, view_window_co.max_cols);
 
@@ -73,28 +63,35 @@ void window_init()
   view_window_co.c_row = round((view_window_co.max_rows / 2) * 0.8);
   view_window_co.c_col = round((view_window_co.max_cols / 2) * 0.8);
 
+  curs_set(0); /* Makes the cursor invisible */
   initscr();
   refresh();
 
-  main_window = newwin(view_window_co.n_rows, view_window_co.n_cols, view_window_co.begin_y, view_window_co.begin_x);
+  return newwin(view_window_co.n_rows, view_window_co.n_cols, view_window_co.begin_y, view_window_co.begin_x);
+}
+
+void print_welcome()
+{
+  char welcome_message[] = "Welcome to terminal connect 4.";
+  int print_col = view_window_co.c_col - (sizeof(welcome_message) / 2);
+  mvwprintw(main_window, view_window_co.c_row, print_col, welcome_message);
 }
 
 // Create the main menu and return user game type
 int main_menu_view()
 {
-  // Only if user no user choice
+  // Only if no user choice
   if (!user_choice)
   {
-    window_init();
+    main_window = window_init();
+    print_welcome();
   }
 
   // First check if the window size
   if (view_window_co.max_rows <= 25 || view_window_co.max_cols <= 50)
   {
-    printw("window too  small");
-    getch();
-    endwin();
-    exit(0);
+    printw("Window too small.\nResize your window and try again");
+    exit_curses(0);
   }
 
   box(main_window, 0, 0);
@@ -129,7 +126,7 @@ int main_menu_view()
     switch (choice)
     {
     case KEY_RIGHT:
-      if (user_choice == (menu_options_len - 2))
+      if (user_choice == (menu_options_len - 1))
         break;
       user_choice++;
       break;
@@ -137,6 +134,11 @@ int main_menu_view()
       if (user_choice == 0)
         break;
       user_choice--;
+      break;
+    case KEY_RESIZE:
+      getmaxyx(main_window, view_window_co.max_rows, view_window_co.max_cols);
+      wclear(main_window);
+      main_menu_view();
       break;
     default:
       break;
@@ -163,7 +165,7 @@ int main_menu_view()
       case 3:
         // Leave the game
         refresh();
-        exit(0);
+        exit_curses();
         return 0;
       }
     }

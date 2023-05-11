@@ -1,5 +1,5 @@
 CC=clang
-CFLAGS=-lcurses -Wall
+CFLAGS=-lcurses -Wall 
 SRCS=$(wildcard src/*.c)
 OBJS=$(patsubst src/%.c, obj/%.o, $(SRCS))
 
