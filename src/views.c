@@ -63,10 +63,18 @@ WINDOW *window_init()
   view_window_co.c_row = round((view_window_co.max_rows / 2) * 0.8);
   view_window_co.c_col = round((view_window_co.max_cols / 2) * 0.8);
 
+  curs_set(0); /* Makes the cursor invisible */
   initscr();
   refresh();
 
   return newwin(view_window_co.n_rows, view_window_co.n_cols, view_window_co.begin_y, view_window_co.begin_x);
+}
+
+void print_welcome()
+{
+  char welcome_message[] = "Welcome to terminal connect 4.";
+  int print_col = view_window_co.c_col - (sizeof(welcome_message) / 2);
+  mvwprintw(main_window, view_window_co.c_row, print_col, welcome_message);
 }
 
 // Create the main menu and return user game type
@@ -76,6 +84,7 @@ int main_menu_view()
   if (!user_choice)
   {
     main_window = window_init();
+    print_welcome();
   }
 
   // First check if the window size
