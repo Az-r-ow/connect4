@@ -3,9 +3,9 @@ CFLAGS=-lcurses -Wall
 SRCS=$(wildcard src/*.c)
 OBJS=$(patsubst src/%.c, obj/%.o, $(SRCS))
 
-all: bin/connect4v2
+all: bin/connect4
 
-bin/connect4v2: $(OBJS)
+bin/connect4: $(OBJS)
 	$(CC) $(CFLAGS) -o $@ $^
 
 obj/%.o: src/%.c
