@@ -57,3 +57,7 @@ Finally launch the game with :
 Pull requests are welcome! If you see something you'd like to add, please do. For drastic changes, please open an issue first.
 
 ---
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
