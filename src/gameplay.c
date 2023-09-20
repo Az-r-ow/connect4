@@ -228,7 +228,14 @@ void game_over(int winner, int withAi)
   }
   else
   {
-    snprintf(message, sizeof(message), "Player %d Won !", winner);
+    if (withAi && winner == 2)
+    {
+      strcpy(message, "AI won !");
+    }
+    else
+    {
+      snprintf(message, sizeof(message), "Player %d Won !", winner);
+    }
   }
 
   clear();
