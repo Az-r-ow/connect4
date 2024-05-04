@@ -1,4 +1,4 @@
-# **Terminal Connect 4**
+# **CLI Connect 4**
 
 ## V3
 
