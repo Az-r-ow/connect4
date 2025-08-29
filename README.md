@@ -1,5 +1,7 @@
 # **Terminal Connect 4**
 
+![](./assets/connect4-demo.gif)
+
 ## V3
 
 ### Monte Carlo tree Search
