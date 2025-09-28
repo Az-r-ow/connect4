@@ -1,15 +1,28 @@
 CC=clang
-CFLAGS=-lcurses -Wall 
-SRCS=$(wildcard src/*.c)
-OBJS=$(patsubst src/%.c, obj/%.o, $(SRCS))
+CFLAGS=-Wall
+LDFLAGS=-lcurses -lm
 
-all: bin/connect4
+SRC_DIR=src
+OBJ_DIR=obj
+BIN_DIR=bin
 
-bin/connect4: $(OBJS)
-	$(CC) $(CFLAGS) -o $@ $^
+SRCS=$(wildcard $(SRC_DIR)/*.c)
+OBJS=$(patsubst $(SRC_DIR)/%.c, $(OBJ_DIR)/%.o, $(SRCS))
 
-obj/%.o: src/%.c
-	$(CC) $(CFLAGS) -c $^ -o $@
+TARGET=$(BIN_DIR)/connect4
+
+all: $(TARGET)
+
+$(TARGET): $(OBJS) | $(BIN_DIR)
+	$(CC) $(LDFLAGS) -o $@ $^
+
+$(OBJ_DIR)/%.o: $(SRC_DIR)/%.c | $(OBJ_DIR)
+	$(CC) $(CFLAGS) -c $< -o $@
+
+$(BIN_DIR) $(OBJ_DIR):
+	mkdir -p $@
 
 clean:
-	rm -rf bin/* obj/*
+	rm -rf $(BIN_DIR)/* $(OBJ_DIR)/*
+
+.PHONY: all clean

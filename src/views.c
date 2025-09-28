@@ -165,7 +165,7 @@ int main_menu_view()
       case 3:
         // Leave the game
         refresh();
-        exit_curses();
+        exit_curses(0);
         return 0;
       }
     }
