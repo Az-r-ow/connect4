@@ -64,12 +64,20 @@ void free_tree(Node *root)
   if (root->childNodes == NULL)
     return;
 
-  for (int i = 0; i < MAX_CHILD_NODES_NUM; i++)
+  if (root->childNodes != NULL)
   {
-    free_tree(&root->childNodes[i]);
+    for (int i = 0; i < MAX_CHILD_NODES_NUM; i++)
+    {
+      free_tree(&root->childNodes[i]);
+    }
+
+    free(root->childNodes);
   }
 
-  free(root->childNodes);
+  // Free the root node
+  if (root->parentNode == NULL)
+    free(root);
+
   return;
 }
 
