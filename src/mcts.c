@@ -126,23 +126,23 @@ void init_child_node(Node *parentNode, int action)
   return;
 }
 
-Node initialize_root_node()
+Node *initialize_root_node()
 {
-  Node root;
-  root.parentNode = NULL;
+  Node *root = malloc(sizeof(Node));
+  root->parentNode = NULL;
 
-  root.childNodes = malloc(MAX_CHILD_NODES_NUM * sizeof(Node));
+  root->childNodes = malloc(MAX_CHILD_NODES_NUM * sizeof(Node));
 
-  root.action = 0;
-  root.uct = 1;
-  root.num_wins = 0;
-  root.num_visits = 0;
-  root.player = 1;
+  root->action = 0;
+  root->uct = 1;
+  root->num_wins = 0;
+  root->num_visits = 0;
+  root->player = 1;
 
   // Initializing and pointing to the children
   for (int i = 0; i < MAX_CHILD_NODES_NUM; i++)
   {
-    init_child_node(&root, i);
+    init_child_node(root, i);
   }
 
   return root;
@@ -285,15 +285,15 @@ void traverse_tree(Node *node)
 }
 
 // Returns a monte carlo tree
-Node mcts()
+Node *mcts()
 {
-  Node root = initialize_root_node();
-  ai_player = root.player == 1 ? 2 : 1;
+  Node *root = initialize_root_node();
+  ai_player = root->player == 1 ? 2 : 1;
   initialize_state();
 
   for (int i = 0; i < ITERATIONS; i++)
   {
-    Node *leaf = selection(&root);
+    Node *leaf = selection(root);
     expansion(leaf);
     initialize_state();
   }
@@ -303,9 +303,9 @@ Node mcts()
 
 int ai_choice()
 {
-  Node mcts_tree = mcts();
-  int optimal_move = get_optimal_move(&mcts_tree);
-  free_tree(&mcts_tree);
+  Node *mcts_tree = mcts();
+  int optimal_move = get_optimal_move(mcts_tree);
+  free_tree(mcts_tree);
   return optimal_move;
 }
 
