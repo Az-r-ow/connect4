@@ -30,6 +30,10 @@ int get_random_available_action(int b[][WIDTH])
     return rand() % WIDTH;
 
   available_actions = malloc(sizeof(int) * available_actions_count);
+  if (available_actions == NULL)
+  {
+    return -1; // Error: memory allocation failed
+  }
 
   int index = 0;
 
@@ -70,6 +74,11 @@ void free_tree(Node *root)
   }
 
   free(root->childNodes);
+
+  // Free the root node
+  if (root->parentNode == NULL)
+    free(root);
+
   return;
 }
 
@@ -126,23 +135,32 @@ void init_child_node(Node *parentNode, int action)
   return;
 }
 
-Node initialize_root_node()
+Node *initialize_root_node()
 {
-  Node root;
-  root.parentNode = NULL;
+  Node *root = malloc(sizeof(Node));
+  if (root == NULL)
+  {
+    return NULL; // Error: memory allocation failed
+  }
+  root->parentNode = NULL;
 
-  root.childNodes = malloc(MAX_CHILD_NODES_NUM * sizeof(Node));
+  root->childNodes = malloc(MAX_CHILD_NODES_NUM * sizeof(Node));
+  if (root->childNodes == NULL)
+  {
+    free(root);
+    return NULL; // Error: memory allocation failed
+  }
 
-  root.action = 0;
-  root.uct = 1;
-  root.num_wins = 0;
-  root.num_visits = 0;
-  root.player = 1;
+  root->action = 0;
+  root->uct = 1;
+  root->num_wins = 0;
+  root->num_visits = 0;
+  root->player = 1;
 
   // Initializing and pointing to the children
   for (int i = 0; i < MAX_CHILD_NODES_NUM; i++)
   {
-    init_child_node(&root, i);
+    init_child_node(root, i);
   }
 
   return root;
@@ -207,6 +225,10 @@ void expansion(Node *leaf)
 
   // Allocate memory for child nodes
   leaf->childNodes = malloc(MAX_CHILD_NODES_NUM * sizeof(Node));
+  if (leaf->childNodes == NULL)
+  {
+    return; // Error: memory allocation failed, can't expand
+  }
 
   // Create child nodes
   for (int i = 0; i < MAX_CHILD_NODES_NUM; i++)
@@ -285,15 +307,19 @@ void traverse_tree(Node *node)
 }
 
 // Returns a monte carlo tree
-Node mcts()
+Node *mcts()
 {
-  Node root = initialize_root_node();
-  ai_player = root.player == 1 ? 2 : 1;
+  Node *root = initialize_root_node();
+  if (root == NULL)
+  {
+    return NULL; // Error: failed to initialize root node
+  }
+  ai_player = root->player == 1 ? 2 : 1;
   initialize_state();
 
   for (int i = 0; i < ITERATIONS; i++)
   {
-    Node *leaf = selection(&root);
+    Node *leaf = selection(root);
     expansion(leaf);
     initialize_state();
   }
@@ -303,9 +329,13 @@ Node mcts()
 
 int ai_choice()
 {
-  Node mcts_tree = mcts();
-  int optimal_move = get_optimal_move(&mcts_tree);
-  free_tree(&mcts_tree);
+  Node *mcts_tree = mcts();
+  if (mcts_tree == NULL)
+  {
+    return -1; // Error: failed to create MCTS tree
+  }
+  int optimal_move = get_optimal_move(mcts_tree);
+  free_tree(mcts_tree);
   return optimal_move;
 }
 
