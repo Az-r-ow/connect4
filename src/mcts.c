@@ -30,6 +30,10 @@ int get_random_available_action(int b[][WIDTH])
     return rand() % MAX_CHILD_NODES_NUM + 1;
 
   available_actions = malloc(sizeof(int) * available_actions_count);
+  if (available_actions == NULL)
+  {
+    return -1; // Error: memory allocation failed
+  }
 
   int index = 0;
 
@@ -64,15 +68,12 @@ void free_tree(Node *root)
   if (root->childNodes == NULL)
     return;
 
-  if (root->childNodes != NULL)
+  for (int i = 0; i < MAX_CHILD_NODES_NUM; i++)
   {
-    for (int i = 0; i < MAX_CHILD_NODES_NUM; i++)
-    {
-      free_tree(&root->childNodes[i]);
-    }
-
-    free(root->childNodes);
+    free_tree(&root->childNodes[i]);
   }
+
+  free(root->childNodes);
 
   // Free the root node
   if (root->parentNode == NULL)
@@ -137,9 +138,18 @@ void init_child_node(Node *parentNode, int action)
 Node *initialize_root_node()
 {
   Node *root = malloc(sizeof(Node));
+  if (root == NULL)
+  {
+    return NULL; // Error: memory allocation failed
+  }
   root->parentNode = NULL;
 
   root->childNodes = malloc(MAX_CHILD_NODES_NUM * sizeof(Node));
+  if (root->childNodes == NULL)
+  {
+    free(root);
+    return NULL; // Error: memory allocation failed
+  }
 
   root->action = 0;
   root->uct = 1;
@@ -215,6 +225,10 @@ void expansion(Node *leaf)
 
   // Allocate memory for child nodes
   leaf->childNodes = malloc(MAX_CHILD_NODES_NUM * sizeof(Node));
+  if (leaf->childNodes == NULL)
+  {
+    return; // Error: memory allocation failed, can't expand
+  }
 
   // Create child nodes
   for (int i = 0; i < MAX_CHILD_NODES_NUM; i++)
@@ -296,6 +310,10 @@ void traverse_tree(Node *node)
 Node *mcts()
 {
   Node *root = initialize_root_node();
+  if (root == NULL)
+  {
+    return NULL; // Error: failed to initialize root node
+  }
   ai_player = root->player == 1 ? 2 : 1;
   initialize_state();
 
@@ -312,6 +330,10 @@ Node *mcts()
 int ai_choice()
 {
   Node *mcts_tree = mcts();
+  if (mcts_tree == NULL)
+  {
+    return -1; // Error: failed to create MCTS tree
+  }
   int optimal_move = get_optimal_move(mcts_tree);
   free_tree(mcts_tree);
   return optimal_move;
