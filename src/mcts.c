@@ -27,7 +27,7 @@ int get_random_available_action(int b[][WIDTH])
   }
 
   if (available_actions_count == WIDTH)
-    return rand() % MAX_CHILD_NODES_NUM + 1;
+    return rand() % WIDTH;
 
   available_actions = malloc(sizeof(int) * available_actions_count);
 
